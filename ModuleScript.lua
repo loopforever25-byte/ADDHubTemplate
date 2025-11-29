@@ -1,242 +1,127 @@
--- ModuleScript: ADDHubTemplate
-local ADDHub = {}
+-- GUI TEMPLATE – ADD++ HUB
+-- SIMPLY CALL addToggle("Name", function(on) ... end)
 
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Store semua elemen GUI
-ADDHub.Elements = {}
+local Template = {}
 
--- ===============================
--- Helper Functions
--- ===============================
-local function createCorner(parent, radius)
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, radius)
-    c.Parent = parent
-end
+-- ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AddHub"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
 
-local function createStroke(parent, thickness, color)
-    local s = Instance.new("UIStroke")
-    s.Thickness = thickness
-    s.Color = color
-    s.Parent = parent
-end
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 300, 0, 250)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
 
-local function enableDrag(frame)
-    local dragging = false
-    local dragStart, startPos
-    frame.InputBegan:Connect(function(input)
+-- Header
+local header = Instance.new("Frame")
+header.Size = UDim2.new(1, 0, 0, 40)
+header.BackgroundColor3 = Color3.fromRGB(50,50,50)
+header.Parent = mainFrame
+
+local title = Instance.new("TextLabel")
+title.Text = "ADD++ HUB"
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundTransparency = 1
+title.Size = UDim2.new(0,150,1,0)
+title.Position = UDim2.new(0,5,0,0)
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 20
+title.Parent = header
+
+local closeBtn = Instance.new("TextButton")
+closeBtn.Text = "X"
+closeBtn.BackgroundColor3 = Color3.fromRGB(200,50,50)
+closeBtn.TextColor3 = Color3.new(1,1,1)
+closeBtn.Size = UDim2.new(0,30,0,30)
+closeBtn.Position = UDim2.new(1,-35,0,5)
+closeBtn.Parent = header
+
+local iconBtn = Instance.new("TextButton")
+iconBtn.Text = "☰"
+iconBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+iconBtn.TextColor3 = Color3.new(1,1,1)
+iconBtn.Size = UDim2.new(0,40,0,40)
+iconBtn.Position = UDim2.new(0,10,0,10)
+iconBtn.Visible = false
+iconBtn.Parent = screenGui
+
+closeBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    iconBtn.Visible = true
+end)
+
+iconBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    iconBtn.Visible = false
+end)
+
+-- Toggle system
+local toggles = {}
+local startY = 50
+local spacing = 35
+
+function Template.addToggle(name, callback)
+    local index = #toggles + 1
+    local y = startY + (index - 1) * spacing
+
+    local row = Instance.new("Frame")
+    row.BackgroundTransparency = 1
+    row.Size = UDim2.new(1,-10,0,30)
+    row.Position = UDim2.new(0,5,0,y)
+    row.Parent = mainFrame
+
+    local label = Instance.new("TextLabel")
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextColor3 = Color3.new(1,1,1)
+    label.Font = Enum.Font.SourceSans
+    label.TextSize = 16
+    label.Size = UDim2.new(0.6,0,1,0)
+    label.Position = UDim2.new(0,5,0,0)
+    label.Parent = row
+
+    local toggle = Instance.new("Frame")
+    toggle.Size = UDim2.new(0,50,0,20)
+    toggle.Position = UDim2.new(1,-55,0,5)
+    toggle.BackgroundColor3 = Color3.fromRGB(80,80,80)
+    toggle.Parent = row
+
+    local slider = Instance.new("Frame")
+    slider.Size = UDim2.new(0.5,0,1,0)
+    slider.Position = UDim2.new(0,0,0,0)
+    slider.BackgroundColor3 = Color3.fromRGB(50,200,50)
+    slider.Parent = toggle
+
+    local isOn = false
+
+    toggle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = UIS:GetMouseLocation()
-            startPos = frame.Position
+            isOn = not isOn
+            TweenService:Create(
+                slider,
+                TweenInfo.new(0.2),
+                {Position = isOn and UDim2.new(0.5,0,0,0) or UDim2.new(0,0,0,0)}
+            ):Play()
+
+            if callback then
+                task.spawn(callback, isOn)
+            end
         end
     end)
-    frame.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-    RunService.Heartbeat:Connect(function()
-        if dragging then
-            local delta = UIS:GetMouseLocation() - dragStart
-            frame.Position = startPos + UDim2.fromOffset(delta.X, delta.Y)
-        end
-    end)
+
+    table.insert(toggles, row)
 end
 
--- ===============================
--- Initialize GUI
--- ===============================
-function ADDHub:Init()
-    -- ScreenGui
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "ADDHubGUI"
-    screenGui.ResetOnSpawn = false
-    screenGui.Parent = playerGui
-    self.Elements.ScreenGui = screenGui
-
-    -- Launcher Button "AH"
-    local launcher = Instance.new("TextButton")
-    launcher.Name = "AH_Launcher"
-    launcher.Size = UDim2.new(0, 60, 0, 60)
-    launcher.Position = UDim2.new(0, 20, 0.5, -30)
-    launcher.BackgroundColor3 = Color3.fromRGB(0,170,255)
-    launcher.Text = "AH"
-    launcher.TextColor3 = Color3.fromRGB(255,255,255)
-    launcher.Font = Enum.Font.GothamBlack
-    launcher.TextSize = 22
-    launcher.Visible = true
-    launcher.Parent = screenGui
-    createCorner(launcher, 60)
-    createStroke(launcher, 2, Color3.fromRGB(0,100,200))
-    enableDrag(launcher)
-    self.Elements.Launcher = launcher
-
-    -- Main Holder
-    local mainHolder = Instance.new("Frame")
-    mainHolder.Size = UDim2.new(0, 410, 0, 310)
-    mainHolder.Position = UDim2.new(0.5, -205, 0.5, -155)
-    mainHolder.BackgroundColor3 = Color3.fromRGB(35,35,40)
-    mainHolder.Parent = screenGui
-    mainHolder.Visible = false
-    createCorner(mainHolder, 12)
-    createStroke(mainHolder, 2, Color3.fromRGB(70,70,80))
-    enableDrag(mainHolder)
-    self.Elements.MainHolder = mainHolder
-
-    -- Close Button
-    local closeButton = Instance.new("TextButton")
-    closeButton.Text = "X"
-    closeButton.Size = UDim2.new(0, 35, 0, 28)
-    closeButton.Position = UDim2.new(1, -45, 0.16, 0)
-    closeButton.BackgroundColor3 = Color3.fromRGB(255,255,255)
-    closeButton.BackgroundTransparency = 0.8
-    closeButton.TextColor3 = Color3.fromRGB(255,255,255)
-    closeButton.Font = Enum.Font.GothamBold
-    closeButton.TextSize = 18
-    closeButton.Parent = mainHolder
-    createCorner(closeButton, 6)
-
-    closeButton.MouseButton1Click:Connect(function()
-        mainHolder.Visible = false
-        launcher.Visible = true
-    end)
-
-    launcher.MouseButton1Click:Connect(function()
-        launcher.Visible = false
-        mainHolder.Visible = true
-    end)
-
-    -- Tabs container
-    self.Elements.Tabs = {}
-end
-
--- ===============================
--- Tabs
--- ===============================
-function ADDHub:AddTab(name)
-    local tabFrame = Instance.new("Frame")
-    tabFrame.Size = UDim2.new(1, -20, 1, -60)
-    tabFrame.Position = UDim2.new(0, 10, 0, 50)
-    tabFrame.BackgroundTransparency = 1
-    tabFrame.Visible = false
-    tabFrame.Parent = self.Elements.MainHolder
-
-    self.Elements.Tabs[name] = tabFrame
-    return tabFrame
-end
-
-function ADDHub:ShowTab(name)
-    for tName, tFrame in pairs(self.Elements.Tabs) do
-        tFrame.Visible = (tName == name)
-    end
-end
-
--- ===============================
--- UI Elements with Callback
--- ===============================
-function ADDHub:AddButton(tabName, text, callback)
-    local tab = self.Elements.Tabs[tabName]
-    assert(tab, "Tab "..tabName.." tidak ada!")
-    local btn = Instance.new("TextButton")
-    btn.Text = text
-    btn.Size = UDim2.new(0, 120, 0, 35)
-    btn.Position = UDim2.new(0, 10, 0, (#tab:GetChildren())*45)
-    btn.Parent = tab
-    btn.MouseButton1Click:Connect(callback)
-    return btn
-end
-
-function ADDHub:AddToggle(tabName, text, callback)
-    local tab = self.Elements.Tabs[tabName]
-    assert(tab, "Tab "..tabName.." tidak ada!")
-    local toggle = Instance.new("TextButton")
-    toggle.Text = text.." OFF"
-    toggle.Size = UDim2.new(0, 120, 0, 35)
-    toggle.Position = UDim2.new(0, 10, 0, (#tab:GetChildren())*45)
-    toggle.Parent = tab
-    local state = false
-    toggle.MouseButton1Click:Connect(function()
-        state = not state
-        toggle.Text = text.." "..(state and "ON" or "OFF")
-        if callback then callback(state) end
-    end)
-    return toggle
-end
-
-function ADDHub:AddInput(tabName, placeholder, callback)
-    local tab = self.Elements.Tabs[tabName]
-    assert(tab, "Tab "..tabName.." tidak ada!")
-    local input = Instance.new("TextBox")
-    input.PlaceholderText = placeholder
-    input.Size = UDim2.new(0, 200, 0, 35)
-    input.Position = UDim2.new(0, 10, 0, (#tab:GetChildren())*45)
-    input.Parent = tab
-    input.FocusLost:Connect(function()
-        if callback then callback(input.Text) end
-    end)
-    return input
-end
-
-function ADDHub:AddDropdown(tabName, labelText, options, callback)
-    local tab = self.Elements.Tabs[tabName]
-    assert(tab, "Tab "..tabName.." tidak ada!")
-    local dropHolder = Instance.new("Frame")
-    dropHolder.Size = UDim2.new(0, 200, 0, 35)
-    dropHolder.Position = UDim2.new(0, 10, 0, (#tab:GetChildren())*45)
-    dropHolder.BackgroundColor3 = Color3.fromRGB(60,60,70)
-    dropHolder.Parent = tab
-    createCorner(dropHolder, 6)
-
-    local dropBtn = Instance.new("TextButton")
-    dropBtn.Text = labelText.." ▼"
-    dropBtn.Size = UDim2.new(1,0,1,0)
-    dropBtn.BackgroundTransparency = 1
-    dropBtn.Parent = dropHolder
-
-    local dropFrame = Instance.new("Frame")
-    dropFrame.Size = UDim2.new(1,0,0,0)
-    dropFrame.Position = UDim2.new(0,0,1,0)
-    dropFrame.BackgroundColor3 = Color3.fromRGB(50,50,60)
-    dropFrame.ClipsDescendants = true
-    dropFrame.Parent = dropHolder
-    createCorner(dropFrame, 6)
-
-    local dropOpen = false
-    local targetSize = 0
-    RunService.RenderStepped:Connect(function()
-        local cur = dropFrame.Size.Y.Offset
-        dropFrame.Size = UDim2.new(1,0,0,cur + (targetSize - cur)*0.18)
-    end)
-
-    dropBtn.MouseButton1Click:Connect(function()
-        dropOpen = not dropOpen
-        targetSize = dropOpen and (#options*35) or 0
-        dropBtn.Text = labelText.." "..(dropOpen and "▲" or "▼")
-    end)
-
-    for i,opt in ipairs(options) do
-        local optionBtn = Instance.new("TextButton")
-        optionBtn.Text = opt
-        optionBtn.Size = UDim2.new(1,0,0,35)
-        optionBtn.Position = UDim2.new(0,0,0,(i-1)*35)
-        optionBtn.BackgroundColor3 = Color3.fromRGB(70,70,80)
-        optionBtn.TextColor3 = Color3.fromRGB(255,255,255)
-        optionBtn.Parent = dropFrame
-        createCorner(optionBtn, 6)
-        optionBtn.MouseButton1Click:Connect(function()
-            dropBtn.Text = labelText.." ▼"
-            dropOpen = false
-            targetSize = 0
-            if callback then callback(opt) end
-        end)
-    end
-    return dropHolder
-end
-
-return ADDHub
+return Template
