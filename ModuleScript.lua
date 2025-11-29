@@ -1,127 +1,169 @@
--- GUI TEMPLATE – ADD++ HUB
--- SIMPLY CALL addToggle("Name", function(on) ... end)
+-- GUI Template
+local GUI = {}
+GUI.Tabs = {}
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
-
-local Template = {}
-
--- ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "AddHub"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = playerGui
+-- Main ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MODULAR_GUI"
+ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 
 -- Main Frame
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 300, 0, 250)
-mainFrame.Position = UDim2.new(0.5, -150, 0.5, -125)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
-mainFrame.Active = true
-mainFrame.Draggable = true
-mainFrame.Parent = screenGui
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 400, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+MainFrame.Parent = ScreenGui
+MainFrame.Active = true
+MainFrame.Draggable = true
 
--- Header
-local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 40)
-header.BackgroundColor3 = Color3.fromRGB(50,50,50)
-header.Parent = mainFrame
+-- Layout for tabs
+local UIListLayout = Instance.new("UIListLayout")
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0,5)
+UIListLayout.Parent = MainFrame
 
-local title = Instance.new("TextLabel")
-title.Text = "ADD++ HUB"
-title.TextColor3 = Color3.new(1,1,1)
-title.BackgroundTransparency = 1
-title.Size = UDim2.new(0,150,1,0)
-title.Position = UDim2.new(0,5,0,0)
-title.Font = Enum.Font.SourceSansBold
-title.TextSize = 20
-title.Parent = header
+-- =========================
+-- Create Tab
+-- =========================
+function GUI:CreateTab(name)
+    local Tab = {}
+    Tab.Name = name
+    Tab.Items = {}
 
-local closeBtn = Instance.new("TextButton")
-closeBtn.Text = "X"
-closeBtn.BackgroundColor3 = Color3.fromRGB(200,50,50)
-closeBtn.TextColor3 = Color3.new(1,1,1)
-closeBtn.Size = UDim2.new(0,30,0,30)
-closeBtn.Position = UDim2.new(1,-35,0,5)
-closeBtn.Parent = header
+    -- Container for tab items
+    local TabFrame = Instance.new("Frame")
+    TabFrame.Size = UDim2.new(1, -10, 0, 0)
+    TabFrame.BackgroundTransparency = 1
+    TabFrame.Parent = MainFrame
 
-local iconBtn = Instance.new("TextButton")
-iconBtn.Text = "☰"
-iconBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-iconBtn.TextColor3 = Color3.new(1,1,1)
-iconBtn.Size = UDim2.new(0,40,0,40)
-iconBtn.Position = UDim2.new(0,10,0,10)
-iconBtn.Visible = false
-iconBtn.Parent = screenGui
+    local Layout = Instance.new("UIListLayout")
+    Layout.SortOrder = Enum.SortOrder.LayoutOrder
+    Layout.Padding = UDim.new(0,5)
+    Layout.Parent = TabFrame
 
-closeBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = false
-    iconBtn.Visible = true
-end)
+    -- =========================
+    -- Create Button
+    -- =========================
+    function Tab:CreateButton(info)
+        local Button = Instance.new("TextButton")
+        Button.Text = info.Name or "Button"
+        Button.BackgroundColor3 = Color3.fromRGB(70,70,70)
+        Button.Size = UDim2.new(1,0,0,30)
+        Button.TextColor3 = Color3.new(1,1,1)
+        Button.Parent = TabFrame
 
-iconBtn.MouseButton1Click:Connect(function()
-    mainFrame.Visible = true
-    iconBtn.Visible = false
-end)
-
--- Toggle system
-local toggles = {}
-local startY = 50
-local spacing = 35
-
-function Template.addToggle(name, callback)
-    local index = #toggles + 1
-    local y = startY + (index - 1) * spacing
-
-    local row = Instance.new("Frame")
-    row.BackgroundTransparency = 1
-    row.Size = UDim2.new(1,-10,0,30)
-    row.Position = UDim2.new(0,5,0,y)
-    row.Parent = mainFrame
-
-    local label = Instance.new("TextLabel")
-    label.BackgroundTransparency = 1
-    label.Text = name
-    label.TextColor3 = Color3.new(1,1,1)
-    label.Font = Enum.Font.SourceSans
-    label.TextSize = 16
-    label.Size = UDim2.new(0.6,0,1,0)
-    label.Position = UDim2.new(0,5,0,0)
-    label.Parent = row
-
-    local toggle = Instance.new("Frame")
-    toggle.Size = UDim2.new(0,50,0,20)
-    toggle.Position = UDim2.new(1,-55,0,5)
-    toggle.BackgroundColor3 = Color3.fromRGB(80,80,80)
-    toggle.Parent = row
-
-    local slider = Instance.new("Frame")
-    slider.Size = UDim2.new(0.5,0,1,0)
-    slider.Position = UDim2.new(0,0,0,0)
-    slider.BackgroundColor3 = Color3.fromRGB(50,200,50)
-    slider.Parent = toggle
-
-    local isOn = false
-
-    toggle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            isOn = not isOn
-            TweenService:Create(
-                slider,
-                TweenInfo.new(0.2),
-                {Position = isOn and UDim2.new(0.5,0,0,0) or UDim2.new(0,0,0,0)}
-            ):Play()
-
-            if callback then
-                task.spawn(callback, isOn)
+        Button.MouseButton1Click:Connect(function()
+            if info.Callback then
+                info.Callback()
             end
-        end
-    end)
+        end)
 
-    table.insert(toggles, row)
+        table.insert(Tab.Items, Button)
+        return Button
+    end
+
+    -- =========================
+    -- Create Toggle
+    -- =========================
+    function Tab:CreateToggle(info)
+        local Frame = Instance.new("Frame")
+        Frame.Size = UDim2.new(1,0,0,30)
+        Frame.BackgroundTransparency = 1
+        Frame.Parent = TabFrame
+
+        local Label = Instance.new("TextLabel")
+        Label.Text = info.Name or "Toggle"
+        Label.BackgroundTransparency = 1
+        Label.Size = UDim2.new(0.6,0,1,0)
+        Label.TextColor3 = Color3.new(1,1,1)
+        Label.Parent = Frame
+
+        local Button = Instance.new("TextButton")
+        Button.Size = UDim2.new(0,50,0,20)
+        Button.Position = UDim2.new(1,-55,0,5)
+        Button.BackgroundColor3 = Color3.fromRGB(100,100,100)
+        Button.Text = "Off"
+        Button.Parent = Frame
+
+        local state = false
+
+        Button.MouseButton1Click:Connect(function()
+            state = not state
+            Button.Text = state and "On" or "Off"
+
+            if state then
+                if info.Callback then
+                    info.Callback(true)
+                end
+            else
+                if info.CallbackOff then
+                    info.CallbackOff(false)
+                end
+            end
+        end)
+
+        table.insert(Tab.Items, Frame)
+        return Frame
+    end
+
+    -- =========================
+    -- Create Slider
+    -- =========================
+    function Tab:CreateSlider(info)
+        local Frame = Instance.new("Frame")
+        Frame.Size = UDim2.new(1,0,0,30)
+        Frame.BackgroundTransparency = 1
+        Frame.Parent = TabFrame
+
+        local Label = Instance.new("TextLabel")
+        Label.Text = info.Name or "Slider"
+        Label.BackgroundTransparency = 1
+        Label.Size = UDim2.new(0.6,0,1,0)
+        Label.TextColor3 = Color3.new(1,1,1)
+        Label.Parent = Frame
+
+        local Slider = Instance.new("Frame")
+        Slider.Size = UDim2.new(0.3,0,1,0)
+        Slider.Position = UDim2.new(0.65,0,0,0)
+        Slider.BackgroundColor3 = Color3.fromRGB(100,100,100)
+        Slider.Parent = Frame
+
+        local dragging = false
+
+        Slider.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = true
+            end
+        end)
+
+        Slider.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                dragging = false
+            end
+        end)
+
+        UserInputService.InputChanged:Connect(function(input)
+            if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                local mouse = UserInputService:GetMouseLocation()
+                local relativeX = math.clamp(mouse.X - Slider.AbsolutePosition.X, 0, Slider.AbsoluteSize.X)
+                local percent = relativeX / Slider.AbsoluteSize.X
+                Slider.Size = UDim2.new(percent,0,1,0)
+                if info.Callback then
+                    info.Callback(percent)
+                end
+            end
+        end)
+
+        table.insert(Tab.Items, Frame)
+        return Frame
+    end
+
+    table.insert(self.Tabs, Tab)
+    return Tab
 end
 
-return Template
+return GUI
