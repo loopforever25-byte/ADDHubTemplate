@@ -640,7 +640,7 @@ function GUI:AddSettingsFrame(info)
 			local ToggleCircle = Instance.new("Frame")
 			ToggleCircle.Size = UDim2.new(0,18,0,18)
 			ToggleCircle.Position = UDim2.new(0,2,0,2)
-			ToggleCircle.BackgroundColor3 = Color3.fromRGB(0, 193, 0) -- warna ON jadi lebih “tipis”
+			ToggleCircle.BackgroundColor3 = Color3.fromRGB(0, 193, 0) -- warna ON jadi lebih Â“tipisÂ”
 			ToggleCircle.Parent = ToggleFrame
 
 			local UICornerCircle = Instance.new("UICorner")
