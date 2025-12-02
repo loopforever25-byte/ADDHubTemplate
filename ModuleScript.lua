@@ -1,11 +1,17 @@
 -- =========================
--- ADD++ HUB GUI Module (Final Fixed)
+-- ADD++ HUB GUI Module
 -- =========================
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
 local GUI = {}
+
+GUI.DefaultLabel = {
+	Font = "SourceSans",
+	TextSize = 90,
+}
+
 GUI.Tabs = {}
 
 -- =========================
@@ -291,7 +297,7 @@ function GUI:AddSettingsFrame(info)
 	Title.TextXAlignment = Enum.TextXAlignment.Left
 	Title.Parent = Header
 
-	-- SubName
+	-- SubName    
 	if info.SubName then
 		local SubTitle = Instance.new("TextLabel")
 		SubTitle.Text = "- "..info.SubName
@@ -328,8 +334,8 @@ function GUI:AddSettingsFrame(info)
 	Minimize.Font = Enum.Font.SourceSansBold
 	Minimize.Parent = Header
 
-	-- parser kecil untuk string PositionIcon
-	local function parseIconPosition(pos)
+	-- parser kecil untuk string Position
+	local function parsePosition(pos)
 		if typeof(pos) == "UDim2" then
 			return pos
 		elseif typeof(pos) == "string" then
@@ -352,14 +358,14 @@ function GUI:AddSettingsFrame(info)
 		else
 			Icon = Instance.new("TextButton")
 			Icon.Text = info.IconText or "AH"
-			Icon.Font = Enum.Font.Bangers
+			Icon.Font = info.IconFont or Enum.Font.Bangers
 			Icon.TextSize = 25
 			Icon.TextColor3 = Color3.fromRGB(255,70,70)
 		end
 
 		local sizeVal = info.IconSize or 40
 		Icon.Size = UDim2.new(0, sizeVal, 0, sizeVal)
-		Icon.Position = parseIconPosition(info.IconPosition) or UDim2.new(0,10,0,50)
+		Icon.Position = parsePosition(info.IconPosition) or UDim2.new(0,10,0,50)
 		Icon.BackgroundColor3 = Color3.fromRGB(0,0,0)
 		Icon.Parent = ScreenGui
 		Icon.Visible = false
@@ -482,8 +488,8 @@ function GUI:AddSettingsFrame(info)
 		TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 		TabButton.Text = name
 		TabButton.TextColor3 = Color3.new(1,1,1)
-		TabButton.Font = Enum.Font.SourceSansBold
-		TabButton.TextSize = 12
+		TabButton.Font = info.FontTab or Enum.Font.SourceSansBold
+		TabButton.TextSize = info.TextSizeTab or 12
 		TabButton.Parent = TabHeader
 
 		local UICornerBtn = Instance.new("UICorner")
@@ -552,7 +558,6 @@ function GUI:AddSettingsFrame(info)
 		-- Tab API
 		local TabAPI = {}
 		
-		
 		function TabAPI:CreateTitle(info)
 			local Title = Instance.new("Frame")
 			Title.Size = UDim2.new(1,0,0,40)
@@ -594,6 +599,7 @@ function GUI:AddSettingsFrame(info)
 		end
 
 		function TabAPI:CreateToggle(info)
+			info = info or {}
 			local Item = Instance.new("Frame")
 			Item.Size = UDim2.new(1,0,0,30)
 			Item.BackgroundColor3 = Color3.fromRGB(30,30,30)
@@ -605,8 +611,8 @@ function GUI:AddSettingsFrame(info)
 			Label.BackgroundTransparency = 1
 			Label.Text = info.Name or "Toggle"
 			Label.TextColor3 = Color3.fromRGB(230,230,230)
-			Label.Font = Enum.Font.SourceSans
-			Label.TextSize = 16
+			Label.Font = ResolveFont(info.Font or GUI.DefaultLabel.Font)
+			Label.TextSize = info.TextSize or GUI.DefaultLabel.TextSize
 			Label.TextXAlignment = Enum.TextXAlignment.Left
 			Label.Position = UDim2.new(0,15,0,0)
 			Label.Parent = Item
@@ -679,8 +685,8 @@ function GUI:AddSettingsFrame(info)
 			Label.BackgroundTransparency = 1
 			Label.Text = info.Name or "Input Toggle"
 			Label.TextColor3 = Color3.fromRGB(230,230,230)
-			Label.Font = Enum.Font.SourceSans
-			Label.TextSize = 16
+			Label.Font = info.Font or Enum.Font.SourceSans
+			Label.TextSize = info.TextSize or 16
 			Label.TextXAlignment = Enum.TextXAlignment.Left
 			Label.Parent = Item
 
@@ -798,8 +804,8 @@ function GUI:AddSettingsFrame(info)
 			Label.BackgroundTransparency = 1
 			Label.Text = info.Name or "Slider Toggle"
 			Label.TextColor3 = Color3.fromRGB(230,230,230)
-			Label.Font = Enum.Font.SourceSans
-			Label.TextSize = 16
+			Label.Font = info.Font or Enum.Font.SourceSans
+			Label.TextSize = info.TextSize or 16
 			Label.TextXAlignment = Enum.TextXAlignment.Left
 			Label.Parent = Item
 
