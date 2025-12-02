@@ -7,13 +7,6 @@ local LocalPlayer = Players.LocalPlayer
 
 local GUI = {}
 
-GUI.DefaultLabel = {
-	Font = "SourceSans",
-	TextSize = 90,
-}
-
-GUI.Tabs = {}
-
 -- =========================
 -- Layout Helper
 -- =========================
@@ -198,11 +191,11 @@ local FontAlias = {
 	Marker = "PermanentMarker",
 
 	-- Roboto variants
-	Roboto = "Roboto",
-	RobotoC = "RobotoCondensed",
-	RobotoCondensed = "RobotoCondensed",
-	RobotoM = "RobotoMono",
-	RobotoMono = "RobotoMono",
+	Rbt = "Roboto",
+	RbtC = "RobotoCondensed",
+	RbtCondensed = "RobotoCondensed",
+	RbtM = "RobotoMono",
+	RbtMono = "RobotoMono",
 	Mono = "RobotoMono",
 
 	-- Sarpanch
@@ -257,6 +250,25 @@ local function ResolveFont(name)
 	return nil  -- ubah default juga ke nil
 end
 
+GUI.DefaultTab = {
+	Font = "SourceSansBold",
+	TextSize = 16,
+}
+
+GUI.DefaultTitle = {
+	Font = "Gotham",
+	TextSize = 16,
+	Align = "Left",
+	BgTransparent = 0,
+}
+
+GUI.DefaultLabel = {
+	Font = "Rbt",
+	TextSize = 14,
+}
+
+GUI.Tabs = {}
+
 -- =========================
 -- AddSettingsFrame
 -- =========================
@@ -281,7 +293,7 @@ function GUI:AddSettingsFrame(info)
 
 	-- Header
 	local Header = Instance.new("Frame")
-	Header.Size = UDim2.new(1,0,0,30)
+	Header.Size = UDim2.new(1,0,0,40)
 	Header.BackgroundColor3 = Color3.fromRGB(0,0,0)
 	Header.Parent = MainFrame
 
@@ -313,8 +325,8 @@ function GUI:AddSettingsFrame(info)
 
 	-- Close Button
 	local Close = Instance.new("TextButton")
-	Close.Size = UDim2.new(0,23,0,18)
-	Close.Position = UDim2.new(1,-35,0,5)
+	Close.Size = UDim2.new(0,25,0,25)
+	Close.Position = UDim2.new(1,-35,0,7)
 	Close.Text = "X"
 	Close.TextColor3 = Color3.new(1,1,1)
 	Close.BackgroundColor3 = Color3.fromRGB(150,0,0)
@@ -326,8 +338,8 @@ function GUI:AddSettingsFrame(info)
 
 	-- Minimize Button
 	local Minimize = Instance.new("TextButton")
-	Minimize.Size = UDim2.new(0,23,0,18)
-	Minimize.Position = UDim2.new(1,-70,0,5)
+	Minimize.Size = UDim2.new(0,25,0,25)
+	Minimize.Position = UDim2.new(1,-70,0,7)
 	Minimize.Text = "_"
 	Minimize.TextColor3 = Color3.fromRGB(255,255,255)
 	Minimize.BackgroundColor3 = Color3.fromRGB(50,50,50)
@@ -433,8 +445,8 @@ function GUI:AddSettingsFrame(info)
 	-- Container utama
 	-- =========================
 	local Container = Instance.new("Frame")
-	Container.Size = UDim2.new(1,-10,1,-45)
-	Container.Position = UDim2.new(0,5,0,35)
+	Container.Size = UDim2.new(1,-10,1,-50)
+	Container.Position = UDim2.new(0,5,0,45)
 	Container.BackgroundTransparency = 1
 	Container.Parent = MainFrame
 
@@ -446,8 +458,9 @@ function GUI:AddSettingsFrame(info)
 
 	-- Scrolling Tab Header (HORIZONTAL)
 	local TabHeader = Instance.new("ScrollingFrame")
-	TabHeader.Size = UDim2.new(1, 0, 0, 30)
+	TabHeader.Size = UDim2.new(1, -10, 0, 30)
 	TabHeader.BackgroundTransparency = 1
+	TabHeader.Position = UDim2.new(0, 5, 0, 5)
 	TabHeader.Parent = Container
 
 	TabHeader.ScrollBarThickness = 4
@@ -469,7 +482,7 @@ function GUI:AddSettingsFrame(info)
 
 	local TabContent = Instance.new("Frame")
 	TabContent.Size = UDim2.new(1,0,1,-40)
-	TabContent.Position = UDim2.new(0,0,0,35)
+	TabContent.Position = UDim2.new(0,0,0,40)
 	TabContent.BackgroundTransparency = 1
 	TabContent.Parent = Container
 
@@ -488,8 +501,8 @@ function GUI:AddSettingsFrame(info)
 		TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 		TabButton.Text = name
 		TabButton.TextColor3 = Color3.new(1,1,1)
-		TabButton.Font = info.FontTab or Enum.Font.SourceSansBold
-		TabButton.TextSize = info.TextSizeTab or 12
+		TabButton.Font = GUI.DefaultTab.Font
+		TabButton.TextSize = GUI.DefaultTab.TextSize
 		TabButton.Parent = TabHeader
 
 		local UICornerBtn = Instance.new("UICorner")
@@ -562,7 +575,7 @@ function GUI:AddSettingsFrame(info)
 			local Title = Instance.new("Frame")
 			Title.Size = UDim2.new(1,0,0,40)
 			Title.BackgroundColor3 = Color3.fromRGB(40,40,40)
-			Title.BackgroundTransparency = info.BgTransparent or 0
+			Title.BackgroundTransparency = info.BgTransparent or GUI.DefaultTitle.BgTransparent
 			Title.Parent = TabContainer
 
 			local Label = Instance.new("TextLabel")
@@ -570,13 +583,13 @@ function GUI:AddSettingsFrame(info)
 			Label.BackgroundTransparency = 1
 			Label.Text = info.Name or "Title"
 			Label.TextColor3 = Color3.fromRGB(255,255,255)
-			Label.TextSize = info.TextSize or 20
-			Label.Font = ResolveFont(info.Font)
+			Label.TextSize = info.TextSize or GUI.DefaultTitle.TextSize
+			Label.Font = ResolveFont(info.Font or GUI.DefaultTitle.Font)
 
 			--------------------------------------------------------------------
 			-- ALIGN
 			--------------------------------------------------------------------
-			local align = info.Align or "Left"
+			local align = info.Align or GUI.DefaultTitle.Align
 			local alignMapX = {
 				Left = Enum.TextXAlignment.Left,
 				Center = Enum.TextXAlignment.Center,
@@ -673,6 +686,7 @@ function GUI:AddSettingsFrame(info)
 		end
 		
 		function TabAPI:CreateTextInputButton(info)
+			info = info or {}
 			local Item = Instance.new("Frame")
 			Item.Size = UDim2.new(1,0,0,65)
 			Item.BackgroundColor3 = Color3.fromRGB(30,30,30)
@@ -792,6 +806,7 @@ function GUI:AddSettingsFrame(info)
 		end
 		
 		function TabAPI:CreateSliderToggle(info)
+			info = info or {}
 			local Item = Instance.new("Frame")
 			Item.Size = UDim2.new(1,0,0,65)
 			Item.BackgroundColor3 = Color3.fromRGB(30,30,30)
