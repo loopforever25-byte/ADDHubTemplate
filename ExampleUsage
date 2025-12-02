@@ -1,40 +1,50 @@
 local GUI = require(script.Parent:WaitForChild("Main"))
 
-local MyFrame = GUI:AddSettingsFrame({
+local ADDHubUI = GUI:AddSettingsFrame({
 	Name = "ADD++ HUB",
 	SubName = "Blox Fruit",
-	Layout = "Landscape",       -- Kotak / Portrait / Landscape
+	Layout = "Landscape",       -- Kotak atau Kosong atau Tulis apapun / Portrait / Landscape
 	FrameDraggable = true,
 	TextSizeName = 25,
 	TextSizeSubName = 20,
-	IconDraggable = false,
+	IconDraggable = true,
 	IconText = "AH",
-	-- IconImg = "rbxassetid://123456789",
+	-- IconImg = "rbxassetid://123456789", -- Gunakan ini untuk ganti dengan assetid gambar icon
 	IconPosition = "x-10 y-50",
 	IconFont = "Bangers",
-	IconSize = 40,     -- cukup angka
-	IconCorner = 7,    -- cukup angka
+	IconSize = 40,
+	IconCorner = 7,
 	FontTab = "ArialBold",
 	TextSizeTab = 12
 })
 
-local TabMain = MyFrame:AddTab("Main")
-local TabCombat = MyFrame:AddTab("Combat")
-local TabEsp = MyFrame:AddTab("ESP")
+GUI.DefaultTab.Font = "Bangers" -- Gunakan ini untuk custom semua Font
+GUI.DefaultTab.TextSize = 16 -- Gunakan ini untuk custom semua TextSize
 
-TabMain:CreateTitle({
+local TabMain = ADDHubUI:AddTab("Main")
+local TabCombat = ADDHubUI:AddTab("Combat")
+local TabEsp = ADDHubUI:AddTab("ESP")
+
+GUI.DefaultTitle.Font = "Highway" -- Gunakan ini untuk custom semua Font title
+GUI.DefaultTitle.TextSize = 20 -- Gunakan ini untuk custom semua TextSize title
+GUI.DefaultTitle.Align = "Left"  -- Gunakan ini untuk custom semua Align title
+GUI.DefaultTitle.BgTransparent = 1  -- Gunakan ini untuk custom semua BgTransparent title
+
+local ADDHub = TabMain:CreateTitle({
 	Name = "Farm",
-	Align = "Left",
-	BgTransparent = 1,
-	Font = "SourceSans",
-	TextSize = 30
+	-- Align = "Left", (Atau gunakan ini untuk custom satu persatu)
+	-- BgTransparent = 1, (Atau gunakan ini untuk custom satu persatu)
+	-- Font = "SourceSans", (Atau gunakan ini untuk custom satu persatu)
+	-- TextSize = 30 (Atau gunakan ini untuk custom satu persatu)
 })
 
-GUI.DefaultLabel.Font = "Bangers"
-GUI.DefaultLabel.TextSize = 16
+GUI.DefaultLabel.Font = "Rbt" -- Gunakan ini untuk custom semua Font label
+GUI.DefaultLabel.TextSize = 16 -- Gunakan ini untuk custom semua TextSize label
 
-TabMain:CreateToggle({
+local ADDHub = TabMain:CreateToggle({
 	Name = "Highlight",
+ -- Font = "Bangers", (Atau gunakan ini untuk custom satu persatu)
+ -- TextSize = 16, (Atau gunakan ini untuk custom satu persatu)
 	Callback = function()
 		local char = game.Players.LocalPlayer.Character
 		if not char then return end
@@ -66,10 +76,12 @@ TabMain:CreateToggle({
 	end
 })
 
-TabMain:CreateTextInputButton({
+local ADDhub = TabMain:CreateTextInputButton({
 	Name = "WalkSpeed",
 	Placeholder = "Angka",
 	CurrentValue = 200,
+ -- Font = "Bangers", (Atau gunakan ini untuk custom satu persatu)
+ -- TextSize = 16, (Atau gunakan ini untuk custom satu persatu)
 	Callback = function(state, value)
 		-- state = true artinya toggle ON
 		if state then
@@ -88,12 +100,14 @@ TabMain:CreateTextInputButton({
 	end
 })
 
-TabMain:CreateSliderToggle({
+local ADDhub = TabMain:CreateSliderToggle({
 	Name = "WalkSpeed",
 	Range = {1, 200},
 	Increment = 1,
 	Suffix = " studs",
 	CurrentValue = 200,
+ -- Font = "Bangers", (Atau gunakan ini untuk custom satu persatu)
+ -- TextSize = 16, (Atau gunakan ini untuk custom satu persatu)
 	Callback = function(value)
 		local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 		if hum then
@@ -108,7 +122,7 @@ TabMain:CreateSliderToggle({
 	end
 })
 
-TabCombat:CreateToggle({
+local ADDhub = TabCombat:CreateToggle({
 	Name = "Aim Kamera",
 	Callback = function() print("On") end,
 	CallbackOff = function() print("Off") end
